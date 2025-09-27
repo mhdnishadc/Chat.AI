@@ -16,32 +16,24 @@ export default function Sidebar({ currentThread, onSelectThread }) {
   }, []);
 
   const handleThreadClick = (t) => {
-    console.log("Thread ID:", t.id); // Debugging
-    onSelectThread(t); // Use the correct prop name
-    navigate(`/chat/${t.id}`); // Navigate to the correct frontend route
+    onSelectThread(t);
+    navigate(`/chat/${t.id}`);
   };
 
-
-  const startNewChat = async () => {
-  const token = localStorage.getItem("access");
-  try {
-    const res = await API.post(
-      "/api/threads/", // URL
-      { title: "New Chat" }, // POST body (optional)
-      {
-        headers: { Authorization: `Bearer ${token}` } // ✅ Correct place
-      }
-    );
-    onSelectThread(res.data); // Pass the full thread object
-    navigate(`/chat/${res.data.id}`);
-  } catch (err) {
-    console.error("Failed to create a new thread:", err);
-  }
-};
-
+  const startNewChat = () => {
+    // Just create a temporary chat object (no backend call)
+    const tempThread = { id: null, title: "New Chat", messages: [] };
+    onSelectThread(tempThread);
+    navigate(`/chat/new`); // Use a special route for temporary chats
+  };
+    const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    navigate('/'); // Refresh to redirect to login
+  };
 
   return (
-    <div className="bg-light border-end p-3" style={{ width: "250px" }}>
+    <div className="d-flex flex-column bg-light border-end p-3" style={{ width: "250px" }}>
       <button className="btn btn-primary w-100 mb-3" onClick={startNewChat}>
         ➕ New Chat
       </button>
@@ -49,7 +41,7 @@ export default function Sidebar({ currentThread, onSelectThread }) {
         {threads.map((t) => (
           <li
             key={t.id}
-           className={`list-group-item ${currentThread?.id === t.id ? "active" : ""}`}
+            className={`list-group-item ${currentThread?.id === t.id ? "active" : ""}`}
             style={{ cursor: "pointer" }}
             onClick={() => handleThreadClick(t)}
           >
@@ -57,6 +49,14 @@ export default function Sidebar({ currentThread, onSelectThread }) {
           </li>
         ))}
       </ul>
+      <div className="mt-auto">
+        <button
+          className="btn btn-danger w-100"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 }

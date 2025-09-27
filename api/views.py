@@ -65,9 +65,6 @@ def post_message(request, thread_id=None):
     if thread_id:
         try:
             thread = ChatThread.objects.get(id=thread_id, user=user)
-            if not thread.title:
-                thread.title = user_content[:30]
-                thread.save()
         except ChatThread.DoesNotExist:
             return Response({"error": "thread not found"}, status=404)
     else:
@@ -98,6 +95,7 @@ def post_message(request, thread_id=None):
     ChatMessage.objects.create(thread=thread, sender="assistant", content=assistant_text)
 
     return Response(
-        {"assistant": assistant_text, "thread_id": thread.id},
+        {"assistant": assistant_text, "thread_id": thread.id, "title": thread.title },
         status=200,
+
     )
