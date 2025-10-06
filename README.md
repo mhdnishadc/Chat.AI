@@ -10,7 +10,7 @@ Powered by Grok LLaMA API for GPT-based responses
 
 Multi-turn conversation support with context retention
 
-User authentication and session management
+User authentication 
 
 Responsive and user-friendly UI built with React.js
 
