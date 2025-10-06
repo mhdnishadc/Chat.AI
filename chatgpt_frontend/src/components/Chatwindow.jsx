@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
 
-export default function ChatWindow({ currentThread, onSelectThread }) {
+export default function ChatWindow({ currentThread, onSelectThread, onThreadCreated }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const { id } = useParams();
+  const navigate = useNavigate();
 
   // Load existing thread messages only if id exists (real thread)
   useEffect(() => {
@@ -38,18 +39,26 @@ export default function ChatWindow({ currentThread, onSelectThread }) {
         );
 
         // Update current thread with backend response
-        onSelectThread({
+        const newThread = {
           id: res.data.thread_id,
           title: res.data.title || "New Chat",
           messages: [
             { sender: "user", content: input },
             { sender: "assistant", content: res.data.assistant },
           ],
-        });
+        };
+        
+        onSelectThread(newThread);
         setMessages([
           { sender: "user", content: input },
           { sender: "assistant", content: res.data.assistant },
         ]);
+
+        // **IMPORTANT: Trigger sidebar refresh**
+        onThreadCreated();
+        
+        // Navigate to the new thread
+        navigate(`/chat/${res.data.thread_id}`);
       } else {
         // Continue chat in existing thread
         res = await API.post(
@@ -62,7 +71,9 @@ export default function ChatWindow({ currentThread, onSelectThread }) {
           { sender: "user", content: input },
           { sender: "assistant", content: res.data.assistant },
         ]);
-        fetchThreads();
+        
+        // **IMPORTANT: Trigger sidebar refresh for title updates**
+        onThreadCreated();
       }
       setInput("");
     } catch (err) {
@@ -90,6 +101,7 @@ export default function ChatWindow({ currentThread, onSelectThread }) {
           className="form-control me-2"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
           placeholder="Type your message..."
         />
         <button className="btn btn-success" onClick={sendMessage}>

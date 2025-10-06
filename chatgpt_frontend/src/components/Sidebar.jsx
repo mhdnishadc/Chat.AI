@@ -2,18 +2,31 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
-export default function Sidebar({ currentThread, onSelectThread }) {
+export default function Sidebar({ currentThread, onSelectThread, refreshTrigger }) {
   const [threads, setThreads] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  // Extract fetch logic into separate function
+  const fetchThreads = () => {
     const token = localStorage.getItem("access");
     API.get("/api/threads/", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => setThreads(res.data))
       .catch((err) => console.error(err));
+  };
+
+  // Fetch on mount
+  useEffect(() => {
+    fetchThreads();
   }, []);
+
+  // Refetch when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      fetchThreads();
+    }
+  }, [refreshTrigger]);
 
   const handleThreadClick = (t) => {
     onSelectThread(t);
@@ -26,7 +39,8 @@ export default function Sidebar({ currentThread, onSelectThread }) {
     onSelectThread(tempThread);
     navigate(`/chat/new`); // Use a special route for temporary chats
   };
-    const handleLogout = () => {
+
+  const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     navigate('/'); // Refresh to redirect to login
