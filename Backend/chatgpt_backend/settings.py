@@ -47,8 +47,11 @@ MIDDLEWARE = [
 ]
 
 # CORS settings - Simple approach for personal projects
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+# Allow only your frontend
+CORS_ALLOWED_ORIGINS = [
+    "https://chat-ai-mu-inky.vercel.app",
+]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
