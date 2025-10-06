@@ -10,7 +10,7 @@ function SignUp() {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await API.post("api/signup/", {
+      await API.post("/api/signup/", {
         username,
         password,
       });
