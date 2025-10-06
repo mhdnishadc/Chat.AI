@@ -43,7 +43,7 @@ export default function Sidebar({ currentThread, onSelectThread, refreshTrigger 
   const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
-    navigate('/'); // Refresh to redirect to login
+    navigate('/login'); // Refresh to redirect to login
   };
 
   return (
