@@ -48,8 +48,8 @@ MIDDLEWARE = [
 
 # CORS settings - Simple approach for personal projects
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_CREDENTIALS = True
 
 
 REST_FRAMEWORK = {
